@@ -1,11 +1,11 @@
 // DFS와 BFS
 const fs = require('fs');
 const input = fs.readFileSync('/dev/stdin').toString().trim().split('\n');
-const [n, m, v] = input[0].split(' ').map(Number);
+const [n, _, v] = input[0].split(' ').map(Number);
 
-function solution(n, arr) {
+function solution(n, v, arr) {
   let graph = Array.from(Array(n + 1), () => []); // 인접 리스트
-  const visited = Array(n + 1).fill(0);
+  const visited = Array(n + 1).fill(false);
   const answer = [[], []]; // dfs, bfs 순
 
   for (const v of arr) {
@@ -14,14 +14,14 @@ function solution(n, arr) {
     graph[dest].push(src);
   }
 
-  graph = graph.map((e) => e.sort((a, b) => a - b));
+  graph = graph.map(v => v.sort((a, b) => a - b));
 
   function dfs(v) {
-    visited[v] = 1;
+    visited[v] = true;
     answer[0].push(v);
 
-    for (const i of graph[v]) {
-      if (!visited[i]) dfs(i);
+    for (const next of graph[v]) {
+      if (!visited[next]) dfs(next);
     }
   }
 
@@ -32,7 +32,7 @@ function solution(n, arr) {
       const cur = queue.shift();
 
       if (visited[cur]) continue;
-      visited[cur] = 1;
+      visited[cur] = true;
       answer[1].push(cur);
 
       for (const next of graph[cur]) {
@@ -42,10 +42,10 @@ function solution(n, arr) {
   }
 
   dfs(v);
-  visited.fill(0); // 초기화
+  visited.fill(false); // 초기화
   bfs(v);
 
-  return answer.map((e) => e.join(' ')).join('\n');
+  return answer.map(v => v.join(' ')).join('\n');
 }
 
-console.log(solution(n, input.slice(1)));
+console.log(solution(n, v, input.slice(1)));
