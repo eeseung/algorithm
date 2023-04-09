@@ -1,35 +1,32 @@
 function solution(n, wires) {
-  const graph = Array.from(Array(n + 1), () => Array(n + 1).fill(false)); // 인접 행렬
-  const visited = Array(n + 1).fill(false);
-  let count = 1;
-  let answer = n;
+  const visited = Array.from(Array(n + 1).fill(false));
+  let graph = Array.from(Array(n + 1), () => []);
+  let answer = Infinity;
 
-  for (const [v1, v2] of wires) {
-    graph[v1][v2] = true;
-    graph[v2][v1] = true;
-  }
+  function dfs(v, count) {
+    visited[v] = true;
+    count++;
 
-  function dfs(v) {
-    for (let i = 1; i <= n; i++) {
-      if (!visited[i] && graph[v][i]) {
-        visited[v] = true;
-        count++;
-        dfs(i);
-        visited[v] = false;
-      }
+    for (const next of graph[v]) {
+      if (!visited[next]) count = dfs(next, count);
     }
+
+    return count;
   }
 
-  for (const [v1, v2] of wires) {
-    count = 1;
+  // 전선 하나씩 끊으면서 두 전력망 송전탑 개수의 차이 구함
+  for (let i = 0; i < n - 1; i++) {
+    const wireArr = wires.filter((v, idx) => idx !== i);
 
-    graph[v1][v2] = false;
-    graph[v2][v1] = false;
-    dfs(1);
-    graph[v1][v2] = true;
-    graph[v2][v1] = true;
+    for (const [src, dest] of wireArr) {
+      graph[src].push(dest);
+      graph[dest].push(src);
+    }
 
+    const count = dfs(1, 0); // 송전탑 개수
     answer = Math.min(answer, Math.abs(n - 2 * count));
+    graph = Array.from(Array(n + 1), () => []);
+    visited.fill(false);
   }
 
   return answer;
