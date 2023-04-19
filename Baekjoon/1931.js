@@ -1,17 +1,20 @@
 // 회의실 배정
-const fs = require('fs');
-const input = fs.readFileSync('/dev/stdin').toString().trim().split('\n');
-const n = parseInt(input[0]);
+const input = require('fs')
+  .readFileSync(process.platform === 'linux' ? '/dev/stdin' : 'test.txt')
+  .toString()
+  .trim()
+  .split('\n');
+const N = parseInt(input[0]);
 const arr = input.slice(1).map(v => v.split(' ').map(Number));
 
-function solution(n, arr) {
+function solution(N, arr) {
   const sorted = arr.sort((a, b) => a[1] === b[1] ? a[0] - b[0] : a[1] - b[1]);
-  let time = sorted[0][1];
-  let answer = 1;
+  let startTime = 0;
+  let answer = 0;
 
-  for (let i = 1; i < n; i++) {
-    if (sorted[i][0] >= time) {
-      time = sorted[i][1];
+  for (let i = 0; i < N; i++) {
+    if (sorted[i][0] >= startTime) {
+      startTime = sorted[i][1];
       answer++;
     }
   }
@@ -19,4 +22,4 @@ function solution(n, arr) {
   return answer;
 }
 
-console.log(solution(n, arr));
+console.log(solution(N, arr));
